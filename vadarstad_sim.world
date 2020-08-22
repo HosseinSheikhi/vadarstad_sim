@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<!--
+  Gazebo ROS camera plugin demo
+
+  Try for example:
+
+  * Launch RViz and visualize Images from `/demo_cam/camera1/image_raw/raw`
+
+-->
+<sdf version="1.6">
+  <world name="default">
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <actor name="actor">
+      <skin>
+        <filename>walk.dae</filename>
+      </skin>
+      <animation name="walking1">
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <trajectory id="0" type="walking1">
+          <waypoint>
+            <time>0</time>
+            <pose>0 2 0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>2</time>
+            <pose>0 -2 0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>2.5</time>
+            <pose>0 -2 0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>7</time>
+            <pose>0 2 0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>7.5</time>
+            <pose>0 2 0 0 0 -1.57</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    <actor name="actor2">
+      <skin>
+        <filename>moonwalk.dae</filename>
+      </skin>
+      <animation name="moonwalking1">
+        <filename>walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <trajectory id="0" type="moonwalking1">
+          <waypoint>
+            <time>0</time>
+            <pose>1 2 0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>2.5</time>
+            <pose>1 -2 0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>3</time>
+            <pose>1 -2 0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>7.5</time>
+            <pose>1 2 0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>8</time>
+            <pose>1 2 0 0 0 -1.57</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+    <model name="camera_model">
+      <pose>0 0 3.5 0 1.57079 0</pose>
+      <static>true</static>
+      <link name="camera_link">
+        <sensor type="camera" name="camera1">
+          <update_rate>60</update_rate>
+          <visualize>true</visualize>
+          <camera name="head">
+            <horizontal_fov>1.3962634</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.02</near>
+              <far>500</far>
+            </clip>
+            <noise>
+              <type>gaussian</type>
+              <!-- Noise is sampled independently per pixel on each frame.
+                   That pixel's noise value is added to each of its color
+                   channels, which at that point lie in the range [0,1]. -->
+              <mean>0.0</mean>
+              <stddev>0.007</stddev>
+            </noise>
+          </camera>
+          <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <ros>
+              <namespace>demo_cam</namespace>
+              <!-- TODO(louise) Remapping not working due to https://github.com/ros-perception/image_common/issues/93 -->
+              <argument>image_raw:=image_demo</argument>
+              <argument>camera_info:=camera_info_demo</argument>
+            </ros>
+            <!-- camera_name>omit so it defaults to sensor name</camera_name-->
+            <!-- frame_name>omit so it defaults to link name</frameName-->
+          </plugin>
+        </sensor>
+      </link>
+    </model>
+  </world>
+</sdf>
